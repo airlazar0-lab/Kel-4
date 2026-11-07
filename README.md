@@ -1,79 +1,41 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Lacak Paket (Laravel 11/12) — CRUD + GIS
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Fitur: CRUD pengiriman, status bertahap, peta Leaflet + OpenStreetMap, klik peta untuk
+mengisi koordinat, geocoding alamat (Nominatim), jarak Haversine, estimasi tiba, endpoint GeoJSON.
 
-## About Laravel
+## Pasang
+1. Buat proyek baru:  `composer create-project laravel/laravel lacak-paket && cd lacak-paket`
+2. Salin isi folder zip ini ke dalam proyek (gabungkan `app/`, `database/`, `resources/`, `routes/`;
+   timpa `routes/web.php`).
+3. Atur database di `.env` (SQLite bawaan Laravel sudah cukup untuk mencoba).
+4. Di `database/seeders/DatabaseSeeder.php`, dalam `run()` tambahkan:
+   `$this->call(ShipmentSeeder::class);`
+5. Jalankan:
+   ```
+   php artisan migrate --seed
+   php artisan serve
+   ```
+6. Buka `http://127.0.0.1:8000/lacak?resi=ID2611070001` (publik) dan `http://127.0.0.1:8000/admin/shipments` (admin).
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Rute
+| Method | URL | Fungsi |
+|---|---|---|
+| GET | /lacak?resi= | Lacak publik |
+| GET | /admin/shipments | Daftar + cari |
+| GET/POST | /admin/shipments/create, /admin/shipments | Tambah |
+| GET | /admin/shipments/{id} | Detail + peta |
+| GET/PUT | /admin/shipments/{id}/edit, /admin/shipments/{id} | Ubah |
+| DELETE | /admin/shipments/{id} | Hapus |
+| POST | /admin/shipments/{id}/events | Tambah status + posisi |
+| GET | /admin/shipments/{id}/geojson | Data GeoJSON |
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
-
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
-
-## Learning Laravel
-
-<<<<<<< HEAD
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
-
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
-
-## Laravel Sponsors
-
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
-
-### Premium Partners
-
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
-=======
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
-
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
-
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
-
-## Agentic Development
-
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
-
-```bash
-composer require laravel/boost --dev
-
-php artisan boost:install
-```
-
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
->>>>>>> b3baa59d76fe099f845702e27d53a9539aea7f05
-
-## Contributing
-
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
-
-## Code of Conduct
-
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+## Catatan produksi
+- Rute `/admin` belum diproteksi. Pasang Laravel Breeze (`composer require laravel/breeze --dev`)
+  lalu tambahkan `->middleware('auth')` pada grup admin.
+- Nominatim publik hanya untuk pemakaian ringan (maks. 1 permintaan/detik, wajib atribusi).
+  Untuk produksi gunakan penyedia geocoding berbayar atau instal sendiri.
+- Tile OSM publik juga punya batasan pemakaian; untuk trafik besar pakai penyedia tile.
+- Koordinat disimpan sebagai kolom decimal. Jika butuh query spasial (radius, poligon wilayah),
+  pindah ke MySQL spatial atau PostgreSQL + PostGIS.
+- Estimasi tiba memakai jarak garis lurus dan kecepatan 40 km/jam; ganti dengan API routing
+  (OSRM, Google Directions) bila ingin akurat mengikuti jalan.
